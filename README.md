@@ -6,19 +6,19 @@ diagrame (dev)
 
 diagrame (final)
 ![image](Diagramme%20tp1%20info306(rendu).drawio.svg)
-
-Learner(<u>id</u>,firstName,lastName,email,password,\$stateId,\$teamId,\$skillId);\
-Skill(<u>id</u>,name,level,color,icon,\$learnerId);\
-Mark(<u>id</u>,mark,\$learnerId);\
-State(<u>id</u>,title,color,icon);\
-Team(<u>id</u>,name,coins,\$acivityId);\
-Session(<u>i</u>,date,maxTeams,name,sylabus,\$trainerId,\$activityId,\$periodId,\$batiment,\$numSalle);\
-Trainer(<u>id</u>,firstName,lastname,email);\
-Role(<u>name</u>,\$<u>trainerId</u>);\
-Activity(<u>id</u>,nom,sylabus,maxTeams,coinsCost,\$skillId,\$periodId,$commentId,$teamId);\
-Period(<u>name</u>,dateStart,dateEnd,color);\
-Room(<u>numero</u>,<u>batiment</u>,num_ordi,date);\
-Comment(<u>id</u>,date,message,mark,\$learnerId);
+<ins>id</ins>
+Learner(<ins>id</ins>,firstName,lastName,email,password,\$stateId,\$teamId,\$skillId);\
+Skill(<ins>id</ins>,name,level,color,icon,\$learnerId);\
+Mark(<ins>id</ins>,mark,\$learnerId);\
+State(<ins>id</ins>,title,color,icon);\
+Team(<ins>id</ins>,name,coins,\$acivityId);\
+Session(<ins>id</ins>,date,maxTeams,name,sylabus,\$trainerId,\$activityId,\$periodId,\$batiment,\$numSalle);\
+Trainer(<ins>id</ins>,firstName,lastname,email);\
+Role(<ins>id</ins>,\$<ins>trainerId</ins>);\
+Activity(<ins>id</ins>,nom,sylabus,maxTeams,coinsCost,\$skillId,\$periodId,$commentId,$teamId);\
+Period(<ins>name</ins>,dateStart,dateEnd,color);\
+Room(<ins>numero</ins>,<ins>batiment</ins>,num_ordi,date);\
+Comment(<ins>id</ins>,date,message,mark,\$learnerId);
 
 
 
