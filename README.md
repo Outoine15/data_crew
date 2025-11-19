@@ -1,6 +1,11 @@
 # Data Crew
 le projet du groupe Data Crew pour les TP du projet info306 à l'USMB
 
+diagrame (dev)
+![image](Diagramme%20tp1%20info306(dev).drawio.svg)
+
+diagrame (final)
+![image](Diagramme%20tp1%20info306(rendu).drawio.svg)
 description 
 
 Dans ce schéma entite association nous avons les entités les plus reconaissables qui sont presente dans le sujet du tp: \
