@@ -6,7 +6,7 @@ diagrame (dev)
 
 diagrame (final)
 ![image](Diagramme%20tp1%20info306(rendu).drawio.svg)
-<ins>id</ins>
+
 Learner(<ins>id</ins>,firstName,lastName,email,password,\$stateId,\$teamId,\$skillId);\
 Skill(<ins>id</ins>,name,level,color,icon,\$learnerId);\
 Mark(<ins>id</ins>,mark,\$learnerId);\
