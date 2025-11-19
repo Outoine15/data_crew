@@ -62,6 +62,10 @@ La relation enseigne en 1:1 indique une spécialisation forte : une activité en
 
 
 
+
+
+
+
 description (dev)
 Dans ce schéma entite association nous avons les entités les plus reconaissables qui sont presente dans le sujet du tp: \
 _nous avons learner qui represente un etudiant\
