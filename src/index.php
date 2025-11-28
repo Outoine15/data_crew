@@ -2,6 +2,7 @@
 include_once "bdd.php";
 include_once "utility.php";
 include_once "crud/*.php";
+include_once "api/*.php";
 
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
@@ -19,3 +20,4 @@ put("/learners/:learnerId", function () {
 // });
 
 header("HTTP/1.0 404");
+
