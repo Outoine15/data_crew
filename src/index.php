@@ -4,7 +4,7 @@ include_once "utility.php";
 foreach (glob("crud/*.crud.php") as $filename) {
     require_once $filename;
 }
-foreach (glob("api/*.api.php") as $filename) {
+foreach (glob("REST/*.rest.php") as $filename) {
     require_once $filename;
 }
 
