@@ -4,6 +4,9 @@ include_once "utility.php";
 foreach (glob("crud/*.crud.php") as $filename) {
     require_once $filename;
 }
+foreach (glob("api/*.api.php") as $filename) {
+    require_once $filename;
+}
 
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
@@ -21,3 +24,4 @@ put("/learners/:learnerId", function () {
 // });
 
 header("HTTP/1.0 404");
+
