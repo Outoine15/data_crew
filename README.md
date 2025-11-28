@@ -14,10 +14,10 @@ State(<ins>id</ins>,title,color,icon);\
 Team(<ins>id</ins>,name,coins,\$acivityId);\
 Session(<ins>id</ins>,date,maxTeams,name,sylabus,\$trainerId,\$activityId,\$periodId,\$batiment,\$numSalle);\
 Trainer(<ins>id</ins>,firstName,lastname,email);\
-Role(<ins>id</ins>,\$<ins>trainerId</ins>);\
+Role(<ins>id</ins>,name,\$<ins>trainerId</ins>);\
 Activity(<ins>id</ins>,nom,sylabus,maxTeams,coinsCost,\$skillId,\$periodId,$commentId,$teamId);\
 Period(<ins>name</ins>,dateStart,dateEnd,color);\
-Room(<ins>numero</ins>,<ins>batiment</ins>,num_ordi,date);\
+Room(<ins>numero</ins>,<ins>batiment</ins>,num_ordi);\
 Comment(<ins>id</ins>,date,message,mark,\$learnerId);
 
 
