@@ -1,5 +1,5 @@
 <?php 
-include_once "utility.php";
+include_once "utility.crud.php";
 
 function insert_activity($conn, $nom, $syllabus, $maxTeam, $coinsCost, $skillId, $periodName, $commentId, $teamId) {
     $sql = "INSERT INTO `Activity` (`nom`, `syllabus`, `maxTeam`, `coinsCost`, `skillId`, `periodName`, `commentId`, `teamId`) 
