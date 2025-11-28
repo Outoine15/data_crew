@@ -1,7 +1,9 @@
 <?php
 include_once "bdd.php";
 include_once "utility.php";
-include_once "crud/*.php";
+foreach (glob("crud/*.crud.php") as $filename) {
+    require_once $filename;
+}
 
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
