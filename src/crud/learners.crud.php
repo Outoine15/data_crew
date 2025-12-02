@@ -14,6 +14,16 @@ function select_learner($conn, $id) {
     return $tab[0];
 }
 
+function connect_learner($conn,$email,$password){
+    $sql = "SELECT * FROM `Learner` WHERE email = `$email` AND password = `$password`";
+
+    global $debeug;
+    if ($debeug) echo $sql . "<br>"; 
+    
+    $res = mysqli_query($conn, $sql); 
+    return $res;
+
+}
 function update_learner_password($conn, $id, $newPassword) {
     $sql = "UPDATE `Learner` SET `password`='$newPassword' WHERE id = $id";
 
