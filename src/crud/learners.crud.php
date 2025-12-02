@@ -14,20 +14,6 @@ function select_learner($conn, $id) {
     return $tab[0];
 }
 
-function select_learner_by_email($conn, $email) {
-    // Sécurité minimum pour l'email
-    $email = mysqli_real_escape_string($conn, $email);
-    
-    $sql = "SELECT * FROM `Learner` WHERE email = '$email'"; 
-    
-    global $debeug;
-    if ($debeug) echo $sql . "<br>"; 
-    
-    $res = mysqli_query($conn, $sql); 
-    $tab = rs_to_tab($res);
-    return isset($tab[0]) ? $tab[0] : null;
-}
-
 function update_learner_password($conn, $id, $newPassword) {
     $sql = "UPDATE `Learner` SET `password`='$newPassword' WHERE id = $id";
 
