@@ -4,7 +4,7 @@ include_once "utility.crud.php";
 // insert learner not needed
 
 function select_learner($conn, $id) {
-    $sql = "SELECT * FROM `Learner` WHERE id = $id"; 
+    $sql = "SELECT * FROM `Learner` WHERE id = $id";
     
     global $debeug;
     if ($debeug) echo $sql . "<br>"; 
