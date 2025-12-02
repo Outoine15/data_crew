@@ -15,7 +15,7 @@ function select_learner($conn, $id) {
 }
 
 function update_learner_password($conn, $id, $newPassword) {
-    $sql = "UPDATE `Activity` SET `password`='$newPassword' WHERE id = $id";
+    $sql = "UPDATE `Learner` SET `password`='$newPassword' WHERE id = $id";
 
     global $debeug;
     if ($debeug) echo $sql . "<br>"; 
@@ -25,7 +25,7 @@ function update_learner_password($conn, $id, $newPassword) {
 }
 
 function update_learner_status($conn, $id, $newStatusId) {
-    $sql = "UPDATE `Activity` SET `stateId`='$newStatusId' WHERE id = $id";
+    $sql = "UPDATE `Learner` SET `stateId`='$newStatusId' WHERE id = $id";
 
     global $debeug;
     if ($debeug) echo $sql . "<br>"; 
