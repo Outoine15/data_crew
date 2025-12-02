@@ -31,6 +31,5 @@ function select_sessions_by_team_id($conn,$teamId){
 
     $res = mysqli_query($conn,$sql);
     return rs_to_tab($res);
-
 }
 ?>

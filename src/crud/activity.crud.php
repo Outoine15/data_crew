@@ -59,8 +59,6 @@ function update_activity($conn, $id, $nom, $syllabus, $maxTeam, $coinsCost, $ski
 }
 
 
-
-
 function delete_activity($conn, $id) {
     $sql = "DELETE FROM `Activity` WHERE id = $id"; 
     

@@ -8,6 +8,7 @@ foreach (glob("REST/*.rest.php") as $filename) {
     require_once $filename;
 }
 
+
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
 });
@@ -17,11 +18,10 @@ put("/learners/:learnerId", function () {
     $user_pwd = $_PUT['password'];
 });
 
-// example working? (not tested)
-// get("/learners", function($param){
-//     $mail=$param['mail'];
-//     $password=$param['password'];
-// });
+post("/learners",function(){
+    echo "OK";
+    exit;
+});
 
 header("HTTP/1.0 404");
 
