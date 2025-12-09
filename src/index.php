@@ -10,6 +10,33 @@ foreach (glob("REST/*.rest.php") as $filename) {
 
 $conn = db();
 
+
+put("/learners/:learnerId/state", function ($param) {
+    global $conn;   
+    $id = $param['learnerId'];
+    $_PUT = read_put();
+        
+    if (!isset($_PUT['state_id'])) {
+        return ["error" => "state_id parameter is missing"];
+    }
+
+    $newStateId = $_PUT['state_id'];
+    $result = update_learner_status($conn, $id, $newStateId);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Learner status updated to ".$newStateId];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Error updating status"];
+    }
+});
+
+
+
+
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
     global $conn;
@@ -195,4 +222,5 @@ get("/states",function(){
 });
 
 header("HTTP/1.0 404");
+
 
