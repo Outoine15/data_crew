@@ -87,7 +87,29 @@ get("/learners/:learnerId", function ($param) {
 
 
 put("/learners/:learnerId", function ($param) {
-    exit;
+    global $conn;
+    $id = $param['learnerId'];
+
+    $_PUT = read_put();
+    
+    if (!isset($_PUT['password'])) {
+        return ["error" => "Password is required"];
+    }
+
+    $newPassword = $_PUT['password'];
+    $result = update_learner_password($conn, $id, $newPassword);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Password updated successfully for learner " . $id
+        ];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Error updating password"
+        ];
+    }
 });
 
 post("/learners",function(){
@@ -173,3 +195,4 @@ get("/states",function(){
 });
 
 header("HTTP/1.0 404");
+
