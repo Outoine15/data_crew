@@ -12,6 +12,7 @@ $conn = db();
 
 
 put("/learners/:learnerId/state", function ($param) {
+// return a 405 not allowed
     global $conn;   
     $id = $param['learnerId'];
     $_PUT = read_put();
