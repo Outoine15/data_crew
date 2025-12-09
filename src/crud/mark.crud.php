@@ -10,7 +10,7 @@ function select_marks_by_learner_id($conn,$learnerId) {
     $res = mysqli_query($conn, $sql); 
     $tab = rs_to_tab($res);
     
-    return $tab[0];
+    return $tab;
 
 }
 ?>

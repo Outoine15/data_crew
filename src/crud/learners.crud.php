@@ -15,15 +15,16 @@ function select_learner($conn, $id) {
 }
 
 function connect_learner($conn,$email,$password){
-    $sql = "SELECT * FROM `Learner` WHERE email = `$email` AND password = `$password`";
+    $sql = "SELECT * FROM `Learner` WHERE email = '$email' AND password = '$password'";
 
     global $debeug;
     if ($debeug) echo $sql . "<br>"; 
     
-    $res = mysqli_query($conn, $sql); 
-    return $res;
-
+    $sql_res = mysqli_query($conn,$sql);
+    $res = rs_to_tab($sql_res);
+    return $res[0];
 }
+
 function update_learner_password($conn, $id, $newPassword) {
     $sql = "UPDATE `Learner` SET `password`='$newPassword' WHERE id = $id";
 

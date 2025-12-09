@@ -12,18 +12,30 @@ $conn = db();
 
 get("/learners/:learnerId", function ($param) {
     $learner_id = $param['learnerId'];
+    echo $learner_id;
+    exit;
 
 });
 
 
-put("/learners/:learnerId", function () {
-    $_PUT = read_put();
-    $user_pwd = $_PUT['password'];
+put("/learners/:learnerId", function ($param) {
+    exit;
 });
 
 post("/learners",function(){
-    echo "OK";
-    exit;
+    global $conn;
+    $user_pwd = $_POST['password'];
+    $user_mail= $_POST['mail'];
+    $res=connect_learner($conn,$user_mail,$user_pwd);
+    $id=$res["id"];
+    $firstName=$res["firstName"];
+    $lastName=$res["lastName"];
+    $email=$res["email"];
+    $pwd=$res["password"];
+    $stateId=$res["stateId"];
+    $teamId=$res["teamId"];
+
+    return $id;
 });
 
 get("/states",function(){
