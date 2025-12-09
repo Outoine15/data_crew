@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once "utility.crud.php";
 
 function list_states($conn) {
@@ -22,7 +22,7 @@ function select_states($conn,$id) {
     $res = mysqli_query($conn, $sql); 
 
 
-    return rs_to_tab($res);
+    return rs_to_tab($res)[0];
 }
 
 ?>
