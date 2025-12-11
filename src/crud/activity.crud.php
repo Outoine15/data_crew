@@ -9,7 +9,12 @@ function insert_activity($conn, $nom, $syllabus, $maxTeam, $coinsCost, $skillId,
     if ($debeug) echo $sql . "<br>"; 
     
     $res = mysqli_query($conn, $sql); 
-    return $res; 
+    if ($res) {
+        $result = ["success" => true, "id" => mysqli_insert_id($conn)];
+    } else {
+        $result = ["error" => mysqli_error($conn)];
+    }
+    return $result; 
 }
 
 
@@ -55,7 +60,12 @@ function update_activity($conn, $id, $nom, $syllabus, $maxTeam, $coinsCost, $ski
     if ($debeug) echo $sql . "<br>"; 
     
     $res = mysqli_query($conn, $sql); 
-    return $res; 
+    if ($res) {
+        $result = ["success" => true];
+    } else {
+        $result = ["error" => mysqli_error($conn)];
+    }
+    return $result; 
 }
 
 
@@ -66,7 +76,12 @@ function delete_activity($conn, $id) {
     if ($debeug) echo $sql . "<br>"; 
     
     $res = mysqli_query($conn, $sql); 
-    return $res;
+    if ($res) {
+        $result = ["success" => true];
+    } else {
+        $result = ["error" => mysqli_error($conn)];
+    }
+    return $result;
 }
 
 ?>
