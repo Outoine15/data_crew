@@ -115,7 +115,6 @@ put("/learners/:learnerId/state", function ($param) {
 
 
 get("/learners/:learnerId", function ($param) {
-    // TODO: not changed to check if it works like this
     $learner_id = $param['learnerId'];
     global $conn;
     echo json_encode(format_learner($learner_id));
@@ -164,7 +163,6 @@ get("/teams/:team_id", function($param){
     $team_id=$param["team_id"];
     $teamData = select_team_by_id($conn,$team_id);
 
-    $teams= [];
     $team = [
         "id" => $teamData["id"],
         "name" => $teamData["name"],
@@ -207,9 +205,131 @@ get("/teams/:team_id", function($param){
 
     }
 
-    array_push($teams,$team);
-    echo json_encode($teams, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    echo json_encode($team, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;
+});
+
+get("/activities", function() {
+    global $conn;
+    $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
+    $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
+    
+    $orderBy = null;
+    $orderDir = 'ASC';
+    if (isset($_GET['date']) && $_GET['date'] != "") { $orderBy = 'date'; $orderDir = $_GET['date']; }
+    elseif (isset($_GET['coin']) && $_GET['coin'] != "") { $orderBy = 'coin'; $orderDir = $_GET['coin']; }
+    elseif (isset($_GET['name']) && $_GET['name'] != "") { $orderBy = 'name'; $orderDir = $_GET['name']; }
+
+    $rawActivities = select_all_activities_filtered($conn, $orderBy, $orderDir, $limit, $offset);
+
+    $formattedActivities = [];
+    foreach ($rawActivities as $act) {
+        $formattedActivities[] = [
+            "id" => (int)$act['id'],
+            "name" => $act['nom'],
+            "syllabus" => isset($act['syllabus']) ? $act['syllabus'] : $act['sylabus'],
+            "coin" => (int)$act['coinsCost'],
+            "maxTeams" => (int)$act['maxTeam'],
+            "period" => [
+                "title" => $act['periodTitle'],
+                "startDate" => $act['dateStart'],
+                "endDate" => $act['dateEnd'],
+                "color" => $act['color']
+            ]
+        ];
+    }
+    return $formattedActivities;
+});
+
+
+
+get("/activities/:activityId", function($param) {
+    global $conn;
+    $id = $param['activityId'];
+
+    $activity = select_activity($conn, $id);
+    if (!$activity) return ["error" => "Activity not found"];
+
+    $period = select_period_by_name($conn, $activity['periodName']);
+    $skill  = select_skill($conn, $activity['skillId']);
+    
+    // Utilise la fonction ajoutée à l'étape 1 ci-dessus
+    $rawSessions = select_sessions_by_activity_id($conn, $id);
+    $formattedSessions = [];
+
+    foreach ($rawSessions as $sess) {
+        $trainer = select_trainer($conn, $sess['trainerId']);
+        // Utilise ta fonction room (mock)
+        $room = select_room($conn, isset($sess['roomId']) ? $sess['roomId'] : 0);
+
+        $formattedSessions[] = [
+            "id" => (int)$sess['id'],
+            "date" => $sess['date'],
+            "trainer" => [
+                "id" => (int)$trainer['id'],
+                "firstName" => $trainer['firstName'],
+                "lastName" => $trainer['lastName']
+            ],
+            "room" => [
+                "building" => $room['building'],
+                "number" => (int)$room['number']
+            ]
+        ];
+    }
+
+    $rawComments = select_comments_by_activity_id($conn, $id);
+    $formattedComments = [];
+    foreach ($rawComments as $com) {
+        $formattedComments[] = [
+            "id" => (int)$com['id'],
+            "learner" => [
+                "id" => (int)$com['learnerId'],
+                "firstName" => $com['firstName'],
+                "lastName" => $com['lastName']
+            ],
+            "date" => $com['date'],
+            "message" => $com['message']
+        ];
+    }
+
+    return [
+        "id" => (int)$activity['id'],
+        "name" => $activity['nom'],
+        "syllabus" => isset($activity['syllabus']) ? $activity['syllabus'] : $activity['sylabus'],
+        "maxTeams" => (int)$activity['maxTeam'],
+        "coin" => (int)$activity['coinsCost'],
+        "period" => [
+            "title" => $period['name'],
+            "startDate" => $period['dateStart'],
+            "endDate" => $period['dateEnd'],
+            "color" => $period['color']
+        ],
+        "mark" => 2.5,
+        "sessions" => $formattedSessions,
+        "comments" => $formattedComments,
+        "skills" => $skill ? [$skill['name']] : []
+    ];
+});
+
+
+post("/activities/:activityId/marks", function($param) {
+    global $conn;
+    $activityId = $param['activityId'];
+
+    if (!isset($_POST['learner_id']) || !isset($_POST['mark'])) {
+        return ["error" => "Missing learner_id or mark"];
+    }
+
+    $learnerId = $_POST['learner_id'];
+    $mark = $_POST['mark'];
+
+    $result = set_activity_mark($conn, $activityId, $learnerId, $mark);
+
+    if ($result) {
+        return ["success" => true, "message" => "Mark set successfully"];
+    } else {
+        return ["success" => false, "message" => "Error saving mark"];
+    }
 });
 
 get("/states",function(){
