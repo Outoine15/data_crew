@@ -84,39 +84,42 @@ function delete_activity($conn, $id) {
     return $result;
 }
 
-function select_all_activities_filtered($conn, $orderBy = null, $orderDir = 'ASC', $limit = null, $offset = 0) {
-    // 1. On prépare la requête de base avec une JOINTURE pour avoir les infos de la Période
-    // On suppose que la table s'appelle 'Period' et que la clé de jointure est 'name'
+function selectionner_toutes_activites_filtrees($connexion, $tri = null, $direction = 'ASC', $limite = null, $debut = 0) {
     $sql = "SELECT
                 A.id, A.nom, A.sylabus, A.maxTeam, A.coinsCost, A.teamId,
                 P.name as periodTitle, P.dateStart, P.dateEnd, P.color
             FROM `Activity` A
             LEFT JOIN `Period` P ON A.periodName = P.name";
 
-    // 2. Gestion du Tri (ORDER BY)
-    // On sécurise pour éviter les injections SQL (whitelist)
-    $allowedSorts = ['date' => 'P.dateStart', 'coin' => 'A.coinsCost', 'name' => 'A.nom'];
 
-    if ($orderBy && array_key_exists($orderBy, $allowedSorts)) {
-        // Si l'utilisateur a demandé un tri valide
-        $column = $allowedSorts[$orderBy];
-        // On force la direction à ASC ou DESC
-        $direction = ($orderDir === 'DESC') ? 'DESC' : 'ASC';
-        $sql .= " ORDER BY $column $direction";
+    $criteresTriAutorises = [
+        'date' => 'P.startDate',
+        'cout' => 'A.coinsCost',
+        'nom' => 'A.nom'
+    ];
+
+    if ($tri && array_key_exists($tri, $criteresTriAutorises)) {
+        $colonne = $criteresTriAutorises[$tri];
+        $ordre = (strtoupper($direction) === 'DESC') ? 'DESC' : 'ASC';
+        $sql .= " ORDER BY $colonne $ordre";
     }
 
-    // 3. Gestion de la Pagination (LIMIT / OFFSET)
-    if ($limit !== null) {
-        $limit = (int)$limit; // Sécurité : on force en entier
-        $offset = (int)$offset;
-        $sql .= " LIMIT $limit OFFSET $offset";
+    if ($limite !== null) {
+        $limite = (int)$limite;
+        $debut = (int)$debut;
+        $sql .= " LIMIT $limite OFFSET $debut";
     }
 
     global $debeug;
-    if ($debeug) echo $sql . "<br>";
+    if (isset($debeug) && $debeug) {
+        echo $sql . "<br>";
+    }
 
-    $res = mysqli_query($conn, $sql);
-    return rs_to_tab($res);
+
+    $resultat = mysqli_query($connexion, $sql);
+
+    
+    return rs_to_tab($resultat);
 }
 
 ?>

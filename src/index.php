@@ -211,23 +211,50 @@ get("/teams/:team_id", function($param){
 
 get("/activities", function() {
     global $conn;
-    $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
-    $offset = isset($_GET['offset']) ? $_GET['offset'] : 0;
-    
-    $orderBy = null;
-    $orderDir = 'ASC';
-    if (isset($_GET['date']) && $_GET['date'] != "") { $orderBy = 'date'; $orderDir = $_GET['date']; }
-    elseif (isset($_GET['coin']) && $_GET['coin'] != "") { $orderBy = 'coin'; $orderDir = $_GET['coin']; }
-    elseif (isset($_GET['name']) && $_GET['name'] != "") { $orderBy = 'name'; $orderDir = $_GET['name']; }
+    $date = "";
+    $coin = "";
+    $name = "";
+    if(isset($_GET["date"])){
+        $date = $_GET['date'];
+    }
+    if(isset($_GET["coin"])){
+        $coin = $_GET['coin'];
+    }
+    if(isset($_GET["name"])){
+        $name = $_GET['name'];
+    }
 
-    $rawActivities = select_all_activities_filtered($conn, $orderBy, $orderDir, $limit, $offset);
+    $limit = 100;
+    $offset = 0;
+    $orderBy = 'id'; 
+    $orderDir = 'ASC';   
+
+    if ($date != "") {
+        $orderBy = 'dateStart'; 
+        $orderDir = $date;}
+    else {
+            
+        if ($coin != "") {
+            $orderBy = 'coin';
+            $orderDir = $coin;
+        } 
+        else {
+        
+            if ($name != "") {
+                $orderBy = 'name';
+                $orderDir = $name;
+            }
+        }
+    }
+
+    $rawActivities = selectionner_toutes_activites_filtrees($conn, $orderBy, $orderDir, $limit, $offset);
 
     $formattedActivities = [];
     foreach ($rawActivities as $act) {
         $formattedActivities[] = [
             "id" => (int)$act['id'],
             "name" => $act['nom'],
-            "syllabus" => isset($act['syllabus']) ? $act['syllabus'] : $act['sylabus'],
+            "syllabus" => $act["sylabus"],
             "coin" => (int)$act['coinsCost'],
             "maxTeams" => (int)$act['maxTeam'],
             "period" => [
@@ -311,6 +338,27 @@ get("/activities/:activityId", function($param) {
     ];
 });
 
+delete("/activities/:activityId/marks", function($param) {
+    global $conn;
+    $activityId = $param["activityId"];
+    $_DELETE = read_put(); 
+    $learnerId = $_DELETE["learner_id"];
+
+
+    $result = delete_mark($conn, $learnerId, $activityId);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Marka ete suppr"
+        ];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Erreuuuuur suppr mark"
+        ];
+    }
+});
 
 post("/activities/:activityId/marks", function($param) {
     global $conn;
@@ -332,6 +380,142 @@ post("/activities/:activityId/marks", function($param) {
     }
 });
 
+
+delete("/activities/:activityId/marks", function($param) {
+    global $conn;
+    $activityId = $param["activityId"];
+    $_DELETE = read_put(); 
+    $learnerId = $_DELETE["learner_id"];
+
+
+    $result = delete_mark($conn, $learnerId, $activityId);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Marka ete suppr"
+        ];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Erreuuuuur suppr mark"
+        ];
+    }
+});
+
+post("/activities/:activityId/comments", function($param) {
+    global $conn;
+    $activityId = $param["activityId"];
+    $learnerId = $_POST["learner_id"];
+    $message   = $_POST["message"];
+    $result = add_comment($conn, $learnerId, $activityId, $message);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Commentaire a ezte ajoute "
+        ];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Erreuur"
+        ];
+    }
+});
+
+delete("/activities/:activityId/comments/:commentId", function($param) {
+    global $conn;
+
+    //$activityId = $param["activityId"];
+    $commentId  = $param["commentId"];
+    $_DELETE = read_put();
+    $result = delete_comment($conn, $commentId);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Comment suppr "
+        ];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Erreur suppr comment"
+        ];
+    }
+});
+
+get("/activities/:activityId/sessions/:sessionId", function($param) {
+    global $conn;
+    $activityId = $param['activityId'];
+    $sessionId = $param['sessionId'];
+    $res = select_session_by_activity_id_and_id($conn, $sessionId, $activityId); 
+    $tab = rs_to_tab($res);
+    $session = $tab[0];
+    $trainer = select_trainer($conn, $session['trainerId']); 
+    $room = select_room($conn, isset($session['roomId']) ? $session['roomId'] : 0); //
+
+    return [
+        "id"=> $session['id'],
+        "date"=> $session['date'],
+        "trainer"=> [
+            "id" => (int)$trainer['id'],
+            "firstName" => $trainer['firstName'],
+            "lastName" => $trainer['lastName']
+        ],
+        "room" => [
+            "building" => $room['building'],
+            "number" => (int)$room['number']
+        ]
+    ];
+});
+
+post("/activities/:activityId/sessions/:sessionId", function($param) {
+    global $conn;
+    $sessionId = $param['sessionId'];
+    $teamId = $_POST['team_id'];
+
+    $result = abo_session($conn, $sessionId, $teamId);
+
+    if ($result) {
+        return ["success" => true, "message" => "Team abo a la session"];
+    } else {
+        return ["success" => false, "message" => "Erreur "];
+    }
+});
+
+delete("/activities/:activityId/sessions/:sessionId", function($param) {
+    global $conn;
+    $sessionId = $param['sessionId'];
+    $teamId = $param['team_id'];
+
+    $result = desabo_session($conn, $sessionId, $teamId);
+
+    if ($result) {
+        return ["success" => true, "message" => "Team désabo de la session"];
+    } else {
+        return ["success" => false, "message" => "Erreur"];
+    }
+});
+
+
+get("/states",function(){
+    global $conn;
+   
+    $result = [];
+    $states = list_states($conn);
+    foreach ($states as $key => $state) {
+        array_push($result,[
+            "id" => $state["id"],
+            "title" => $state["title"],
+            "color" => $state["color"],
+            "icon" => $state["icon"]
+        ]);
+    }
+    echo json_encode($result);
+    exit;
+});
+
+
 get("trainer/:trainerId",function($param){
     global $conn;
     $trainerId = $param["trainerId"];
@@ -348,7 +532,7 @@ get("trainer/:trainerId",function($param){
 
     $roleData = select_role_by_trainer_id($conn,$trainerId);
     foreach ($roleData as $key => $role) {
-        array_push($return["roles"],role);
+        array_push($return["roles"],$role);
     }
 
     $sessions = select_sessions_by_trainer_id($conn,$trainerId);
@@ -382,11 +566,5 @@ get("trainer/:trainerId",function($param){
     exit;
 });
 
-get("/states",function(){
-    global $conn;
-   
-    return list_states($conn);
-
-});
 
 header("HTTP/1.0 404");

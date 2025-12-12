@@ -33,4 +33,12 @@ function set_activity_mark($conn, $activityId, $learnerId, $mark) {
     return $res;
 }
 
+function delete_mark($conn, $learnerId, $activityId){
+    $sql = "DELETE FROM `Mark` WHERE learnerId = $learnerId AND activityId = $activityId";
+
+    global $debug;
+    if ($debug) echo $sql . "<br>";
+
+    return mysqli_query($conn,$sql);
+}
 ?>

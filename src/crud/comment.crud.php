@@ -1,7 +1,7 @@
 <?php
 include_once "utility.crud.php";
 
-function delte_comment($conn,$id){
+function delete_comment($conn,$id){
     $sql = "DELETE FROM `Comment` WHERE id = $id"; 
     
     global $debeug;
@@ -26,4 +26,12 @@ function select_comments_by_activity_id($conn, $activityId) {
     return rs_to_tab($res);
 }
 
+function add_comment($conn, $learnerId, $activityId, $message){
+    $sql = "INSERT INTO `Comment`(`date`, `message`, `learnerId`, `activityId`) VALUES (CURRENT_TIME,`$message`,$learnerId,$activityId)";
+
+    global $debeug;
+    if ($debeug) echo $sql . "<br>";
+
+    return mysqli_query($conn,$sql);
+}
 ?>

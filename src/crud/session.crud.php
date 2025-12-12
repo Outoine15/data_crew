@@ -30,4 +30,21 @@ function select_sessions_by_trainer_id($conn, $trainerId){
     $res = mysqli_query($conn, $sql);
     return rs_to_tab($res);
 }
+
+function abo_session($conn, $sessionId, $teamId) {
+    $sql = "INSERT INTO `TeamSession` (`sessionId`, `teamId`) VALUES ($sessionId, $teamId)";
+   
+    global $debeug;
+    if ($debeug) echo $sql . "<br>";
+    return mysqli_query($conn, $sql);
+}
+
+function desabo_session($conn, $sessionId, $teamId) {
+    $sql = "DELETE FROM `TeamSession` WHERE sessionId = $sessionId AND teamId = $teamId";
+   
+    global $debeug;
+    if ($debeug) echo $sql . "<br>";
+   
+    return mysqli_query($conn, $sql);
+}
 ?>
