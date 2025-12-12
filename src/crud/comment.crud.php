@@ -27,7 +27,7 @@ function select_comments_by_activity_id($conn, $activityId) {
 }
 
 function add_comment($conn, $learnerId, $activityId, $message){
-    $sql = "INSERT INTO `Comment`(`date`, `message`, `learnerId`, `activityId`) VALUES (CURRENT_TIME,'$message',$learnerId,$activityId)";
+    $sql = "INSERT INTO `Comment`(`date`, `message`, `learnerId`, `activityId`) VALUES (NOW(),'$message',$learnerId,$activityId)";
 
     global $debeug;
     if ($debeug) echo $sql . "<br>";
