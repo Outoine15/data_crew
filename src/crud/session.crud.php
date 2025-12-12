@@ -21,4 +21,13 @@ function select_sessions_by_activity_id($conn, $activityId) {
     return rs_to_tab($res);
 }
 
+function select_sessions_by_trainer_id($conn, $trainerId){
+    $sql = "SELECT * FROM `Session` WHERE trainerId=$trainerId";
+
+    global $debeug;
+    if ($debeug) echo $sql . "<br>";
+    
+    $res = mysqli_query($conn, $sql);
+    return rs_to_tab($res);
+}
 ?>

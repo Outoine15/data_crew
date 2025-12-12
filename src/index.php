@@ -332,6 +332,56 @@ post("/activities/:activityId/marks", function($param) {
     }
 });
 
+get("trainer/:trainerId",function($param){
+    global $conn;
+    $trainerId = $param["trainerId"];
+    $trainerData = select_trainer($conn,$trainerId);
+
+    $return = [
+        "id" => $trainerData["id"],
+        "firstName" => $trainerData["firstName"],
+        "lastName" => $trainerData["lastName"],
+        "mail" => $trainerData["email"],
+        "roles" => [],
+        "sessions" => []
+    ];
+
+    $roleData = select_role_by_trainer_id($conn,$trainerId);
+    foreach ($roleData as $key => $role) {
+        array_push($return["roles"],role);
+    }
+
+    $sessions = select_sessions_by_trainer_id($conn,$trainerId);
+    foreach ($sessions as $key => $sessionData) {
+        $activityData=select_activity($conn,$sessionData["activityId"]);
+        $current_activity = [
+            "id" => $activityData["id"],
+            "name" => $activityData["nom"],
+            "syllabus" => $activityData["sylabus"],
+            "coin" => $activityData["coinsCost"],
+            "maxTeams" => $activityData["maxTeam"]
+        ];
+        $periodData = select_period_by_name($conn,$sessionData["periodName"]);
+        $current_period = [
+            "title" => $periodData["name"],
+            "startDate" => $periodData["dateStart"],
+            "endDate" => $periodData["dateEnd"],
+            "color" => $periodData["color"]
+        ];
+
+        $current_session = [
+            "id" => $sessionData["id"],
+            "trainerId" => $sessionData["trainerId"],
+            "activity" => $current_activity,
+            "period" => $current_period
+        ];
+        array_push($return['sessions'],$current_session);
+
+    }
+    echo json_encode($return);
+    exit;
+});
+
 get("/states",function(){
     global $conn;
    
