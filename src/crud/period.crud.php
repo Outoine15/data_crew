@@ -2,7 +2,8 @@
 include_once "utility.crud.php";
 
 function select_period_by_name($conn, $name) {
-    $sql = "SELECT * FROM `Period` WHERE name = $name"; 
+    // $sql = 'SELECT * FROM `Period` WHERE `name` = $name';
+    $sql = "SELECT * FROM `Period` WHERE `name` = '$name'";
     
     global $debeug;
     if ($debeug) echo $sql . "<br>"; 

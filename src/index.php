@@ -10,43 +10,12 @@ foreach (glob("REST/*.rest.php") as $filename) {
 
 $conn = db();
 
-
-put("/learners/:learnerId/state", function ($param) {
-// return a 405 not allowed
-    global $conn;   
-    $id = $param['learnerId'];
-    $_PUT = read_put();
-        
-    if (!isset($_PUT['state_id'])) {
-        return ["error" => "state_id parameter is missing"];
-    }
-
-    $newStateId = $_PUT['state_id'];
-    $result = update_learner_status($conn, $id, $newStateId);
-
-    if ($result) {
-        return [
-            "success" => true,
-            "message" => "Learner status updated to ".$newStateId];
-    } else {
-        return [
-            "success" => false,
-            "message" => "Error updating status"];
-    }
-});
-
-
-
-
-get("/learners/:learnerId", function ($param) {
-    // TODO: not changed to check if it works like this
-    $learner_id = $param['learnerId'];
+function format_learner($learner_id){
     global $conn;
     $res=select_learner($conn,$learner_id);
 
     if (!$res || !isset($res["id"])) {
-        echo json_encode(["error" => "Learner not found"]);
-        exit;
+        return json_encode(["error" => "Learner not found"]);
     }
 
     $id=$res["id"];
@@ -97,7 +66,7 @@ get("/learners/:learnerId", function ($param) {
             "icon"=>$icon
         ];
 
-        array_push($skillArray,json_encode($curentSkill));
+        array_push($skillArray,$curentSkill);
     }
     $return['skills'] = $skillArray;
 
@@ -111,13 +80,46 @@ get("/learners/:learnerId", function ($param) {
             "mark"=>$mark
         ];
 
-        array_push($markArray,json_encode($curentMark));
+        array_push($markArray,$curentMark);
     }
     $return['marks']=$markArray;
 
-    echo json_encode($return);
-    exit;
+    return $return;
+}
 
+put("/learners/:learnerId/state", function ($param) {
+// return a 405 not allowed
+    global $conn;   
+    $id = $param['learnerId'];
+    $_PUT = read_put();
+        
+    if (!isset($_PUT['state_id'])) {
+        return ["error" => "state_id parameter is missing"];
+    }
+
+    $newStateId = $_PUT['state_id'];
+    $result = update_learner_status($conn, $id, $newStateId);
+
+    if ($result) {
+        return [
+            "success" => true,
+            "message" => "Learner status updated to ".$newStateId];
+    } else {
+        return [
+            "success" => false,
+            "message" => "Error updating status"];
+    }
+});
+
+
+
+
+get("/learners/:learnerId", function ($param) {
+    // TODO: not changed to check if it works like this
+    $learner_id = $param['learnerId'];
+    global $conn;
+    echo json_encode(format_learner($learner_id));
+    exit;
 });
 
 
@@ -153,160 +155,62 @@ post("/learners",function(){
     $user_mail= $_POST['mail'];
     $res=connect_learner($conn,$user_mail,$user_pwd);
     $id=$res["id"];
-    $firstName=$res["firstName"];
-    $lastName=$res["lastName"];
-    $email=$res["email"];
-    $pwd=$res["password"];
-    $stateId=$res["stateId"];
-    $teamId=$res["teamId"];
-
-    $resState=select_states($conn,$stateId);
-    $resSkill=select_skills_by_learner_id($conn,$id);
-    $resMark = select_marks_by_learner_id($conn,$id);
-
-    $stateId=$resState["id"];
-    $stateTitle=$resState["title"];
-    $stateColor=$resState["color"];
-    $stateIcon=$resState["icon"];
-    
-    $return = [
-        "id" => $id,
-        "firstName"=>$firstName,
-        "lastName"=>$lastName,
-        "email"=>$email,
-        "team"=>$teamId,
-        "state"=>[
-            "id"=>$stateId,
-            "title"=>$stateTitle,
-            "color"=>$stateColor,
-            "icon"=>$stateIcon,
-        ],
-        "skills"=>[],
-        "marks"=>[]
-    ];
-
-    $skillArray=[];
-    for ($i=0; $i < count($resSkill); $i++) { 
-
-        $name=$resSkill[$i]["name"];
-        $level=$resSkill[$i]["level"];
-        $color=$resSkill[$i]["color"];
-        $icon=$resSkill[$i]["icon"];
-
-        $curentSkill=[
-            "name"=>$name,
-            "level"=>$level,
-            "color"=>$color,
-            "icon"=>$icon
-        ];
-
-        array_push($skillArray,json_encode($curentSkill));
-    }
-    $return['skills'] = $skillArray;
-
-    $markArray=[];
-    for ($i=0; $i < count($resMark); $i++) {
-        $activityId= $resMark[$i]["activityId"];
-        $mark= $resMark[$i]["mark"];
-
-        $curentMark=[
-            "activityId"=>$activityId,
-            "mark"=>$mark
-        ];
-
-        array_push($markArray,json_encode($curentMark));
-    }
-    $return['marks']=$markArray;
-
-    echo json_encode($return);
+    echo json_encode(format_learner($id));
     exit;
 });
 
-post("/learners",function(){
+get("/teams/:team_id", function($param){
     global $conn;
-    $user_pwd = $_POST['password'];
-    $user_mail= $_POST['mail'];
-    $res = connect_learner($conn,$user_mail,$user_pwd);
+    $team_id=$param["team_id"];
+    $teamData = select_team_by_id($conn,$team_id);
 
-    if (!$res || !isset($res["id"])) {
-        echo json_encode(["error" => "Learner not found"]);
-        exit;
-    }
-
-    $id = $res["id"];
-    $firstName = $res["firstName"];
-    $lastName = $res["lastName"];
-    $email = $res["email"];
-    $pwd = $res["password"];
-    $stateId = $res["stateId"];
-    $teamId = $res["teamId"];
-
-    $resState = select_states($conn,$stateId);
-    if (!$resState) $resState = [];
-
-    $stateId = $resState["id"];
-    $stateTitle = $resState["title"];
-    $stateColor = $resState["color"];
-    $stateIcon = $resState["icon"];
-
-    $resSkill = select_skills_by_learner_id($conn,$id);
-    if (!is_array($resSkill)) $resSkill = [];
-
-    $resMark = select_marks_by_learner_id($conn,$id);
-    if (!is_array($resMark)) $resMark = [];
-
-    $return = [
-        "id" => $id,
-        "firstName"=>$firstName,
-        "lastName"=>$lastName,
-        "email"=>$email,
-        "team"=>$teamId,
-        "state"=>[
-            "id"=>$stateId,
-            "title"=>$stateTitle,
-            "color"=>$stateColor,
-            "icon"=>$stateIcon,
-        ],
-        "skills"=>[],
-        "marks"=>[]
+    $teams= [];
+    $team = [
+        "id" => $teamData["id"],
+        "name" => $teamData["name"],
+        "coin" => $teamData["coins"],
+        "learners" => [],
+        "sessions" => []
     ];
 
-    $skillArray = [];
-    for ($i=0; $i < count($resSkill); $i++) {
-        $name = isset($resSkill[$i]["name"]) ? $resSkill[$i]["name"] : "";
-        $level = isset($resSkill[$i]["level"]) ? $resSkill[$i]["level"] : "";
-        $color = isset($resSkill[$i]["color"]) ? $resSkill[$i]["color"] : "";
-        $icon = isset($resSkill[$i]["icon"]) ? $resSkill[$i]["icon"] : "";
+    $learners = select_learners_id_by_team_id($conn,$team_id);
+    foreach ($learners as $key => $learner_id) {
+        array_push($team['learners'],format_learner($learner_id));
+    }
 
-        $curentSkill = [
-            "name"=>$name,
-            "level"=>$level,
-            "color"=>$color,
-            "icon"=>$icon
+    $sessions = select_sessions_by_team_id($conn,$team_id);
+
+    foreach ($sessions as $key => $sessionData) {
+        $activityData=select_activity($conn,$sessionData["activityId"]);
+        $current_activity = [
+            "id" => $activityData["id"],
+            "name" => $activityData["nom"],
+            "syllabus" => $activityData["sylabus"],
+            "coin" => $activityData["coinsCost"],
+            "maxTeams" => $activityData["maxTeam"]
+        ];
+        $periodData = select_period_by_name($conn,$sessionData["periodName"]);
+        $current_period = [
+            "title" => $periodData["name"],
+            "startDate" => $periodData["dateStart"],
+            "endDate" => $periodData["dateEnd"],
+            "color" => $periodData["color"]
         ];
 
-        array_push($skillArray,json_encode($curentSkill));
-    }
-    $return['skills'] = $skillArray;
-
-    $markArray = [];
-    for ($i=0; $i < count($resMark); $i++) {
-        $activityId = isset($resMark[$i]["activityId"]) ? $resMark[$i]["activityId"] : null;
-        $mark = isset($resMark[$i]["mark"]) ? $resMark[$i]["mark"] : null;
-
-        $curentMark = [
-            "activityId"=>$activityId,
-            "mark"=>$mark
+        $current_session = [
+            "id" => $sessionData["id"],
+            "trainerId" => $sessionData["trainerId"],
+            "activity" => $current_activity,
+            "period" => $current_period
         ];
+        array_push($team['sessions'],$current_session);
 
-        array_push($markArray,json_encode($curentMark));
     }
-    $return['marks']=$markArray;
 
-    echo json_encode($return);
+    array_push($teams,$team);
+    echo json_encode($teams, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;
 });
-
 
 get("/states",function(){
     global $conn;
@@ -316,5 +220,3 @@ get("/states",function(){
 });
 
 header("HTTP/1.0 404");
-
-
