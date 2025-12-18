@@ -319,6 +319,19 @@ get("/activities/:activityId", function($param) {
         ];
     }
 
+    // moyenne notes activity:
+    $markData = select_marks_by_activity_id($conn,$id);
+    $moyenneDiv = count($markData);
+    $moyenne = 0;
+    if ($moyenneDiv>0) {
+        foreach ($markData as $key => $mark) {
+            $moyenne+=$mark["mark"];
+        }
+        $moyenne=$moyenne/$moyenneDiv;
+    } else {
+        $moyenne=0;
+    }
+
     return [
         "id" => (int)$activity['id'],
         "name" => $activity['nom'],
@@ -331,7 +344,7 @@ get("/activities/:activityId", function($param) {
             "endDate" => $period['dateEnd'],
             "color" => $period['color']
         ],
-        "mark" => 2.5,
+        "mark" => $moyenne,
         "sessions" => $formattedSessions,
         "comments" => $formattedComments,
         "skills" => $skill ? [$skill['name']] : []
@@ -516,7 +529,7 @@ get("/states",function(){
 });
 
 
-get("trainer/:trainerId",function($param){
+get("/trainers/:trainerId",function($param){
     global $conn;
     $trainerId = $param["trainerId"];
     $trainerData = select_trainer($conn,$trainerId);
@@ -532,7 +545,7 @@ get("trainer/:trainerId",function($param){
 
     $roleData = select_role_by_trainer_id($conn,$trainerId);
     foreach ($roleData as $key => $role) {
-        array_push($return["roles"],$role);
+        array_push($return["roles"],$role["name"]);
     }
 
     $sessions = select_sessions_by_trainer_id($conn,$trainerId);
@@ -554,10 +567,16 @@ get("trainer/:trainerId",function($param){
         ];
 
         $current_session = [
-            "id" => $sessionData["id"],
-            "trainerId" => $sessionData["trainerId"],
-            "activity" => $current_activity,
-            "period" => $current_period
+            "id" => (int)$sessionData["id"],
+            "date" => $sessionData["date"],
+            "room" => [
+                "building" => $sessionData["building"],
+                "number" => (int)$sessionData["roomNumber"]
+            ],
+            "activity" => [
+                "id" => (int)$activityData["id"],
+                "name" => $activityData["nom"]
+            ]
         ];
         array_push($return['sessions'],$current_session);
 

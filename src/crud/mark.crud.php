@@ -14,6 +14,19 @@ function select_marks_by_learner_id($conn,$learnerId) {
 
 }
 
+function select_marks_by_activity_id($conn,$activityId) {
+    $sql = "SELECT * FROM `Mark` WHERE activityId = $activityId"; 
+    
+    global $debeug;
+    if ($debeug) echo $sql . "<br>"; 
+    
+    $res = mysqli_query($conn, $sql); 
+    $tab = rs_to_tab($res);
+    
+    return $tab;
+
+}
+
 function set_activity_mark($conn, $activityId, $learnerId, $mark) {
     $checkSql = "SELECT * FROM `Mark` WHERE activityId = $activityId AND learnerId = $learnerId";
     $checkRes = mysqli_query($conn, $checkSql);
